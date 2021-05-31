@@ -2,8 +2,15 @@
 from model.contact import Contact
 
 def test_add_contact(app):
-    app.contact.create(Contact(firstname="1111", middlename="22222", lastname="33333", nickname="44444", title="5555",
+    old_contacts = app.contact.get_contact_list()
+    contact = Contact(firstname="1111", middlename="22222", lastname="33333", nickname="44444", title="5555",
                 company="66666", address="77777", home="8888", mobile="9999", work="00000",
                 fax="11111", email="22222", email2="33333", email3="444444", homepage="5555", bday="15",
                 bmonth="September", byear="5555", aday="14", amonth="November",
-                ayear="6666", address2="55555", phone2="5555", notes="555555"))
+                ayear="6666", address2="55555", phone2="5555", notes="555555")
+    app.contact.create(contact)
+    new_contacts = app.contact.get_contact_list()
+    assert len(old_contacts) + 1 == len(new_contacts)
+    # добавление новой группы в список
+    old_contacts.append(contact)
+    assert sorted(old_contacts, key=Contact.id_or_max) == sorted(new_contacts, key=Contact.id_or_max)

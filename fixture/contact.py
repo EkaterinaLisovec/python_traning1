@@ -73,14 +73,6 @@ class ContactHelper:
         wd = self.app.wd
         wd.find_element_by_name("selected[]").click()
 
-    def update_first_contact(self, update_middlename):
-        wd = self.app.wd
-        wd.find_element_by_xpath("//img[@alt='Edit']").click()
-        wd.find_element_by_xpath("//form[@action='edit.php']").click()
-        wd.find_element_by_name("middlename").clear()
-        wd.find_element_by_name("middlename").send_keys(update_middlename)
-        wd.find_element_by_name("update").click()
-
     def count(self):
         wd = self.app.wd
         self.open_contact_list_page()

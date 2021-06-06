@@ -9,7 +9,7 @@ class Group:
 
     #определяем как выводить значения элемнтов списка в консоли (не "гуиды", а то, как мы задаем значения)
     def __repr__(self):
-        return "%s:%s" % (self.id, self.name)
+        return "%s:%s;%s;%s" % (self.id, self.name, self.header, self.footer)
 
     #определяем как сравнивать объекты
     def __eq__(self, other):

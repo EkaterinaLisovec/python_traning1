@@ -37,7 +37,7 @@ class Contact:
 
     # определяем как выводить значения элемнтов списка в консоли (не "гуиды", а то, как мы задаем значения)
     def __repr__(self):
-        return "%s:%s:%s" % (self.id, self.firstname, self.lastname)
+        return "%s:%s;%s" % (self.id, self.firstname, self.lastname)
 
     # определяем как сравнивать объекты
     def __eq__(self, other):

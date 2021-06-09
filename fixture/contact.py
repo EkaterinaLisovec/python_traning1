@@ -91,7 +91,8 @@ class ContactHelper:
 
     def select_contact_by_id(self, id):
         wd = self.app.wd
-        wd.find_element_by_css_selector("input[value='%s']" % id).click()
+        # wd.find_element_by_css_selector("input[value='%s']" % id).click()
+        wd.find_element_by_id(id).click()
 
     def select_contact_by_index(self, index):
         wd = self.app.wd
@@ -184,3 +185,25 @@ class ContactHelper:
         phone2 = re.search("P: (.*)", text).group(1)
         return Contact(homephone=homephone, workphone=workphone,
                        mobilephone=mobilephone, phone2=phone2)
+
+    def add_contact_in_group(self, id_contact, id_group):
+        wd = self.app.wd
+        self.app.open_home_page()
+        self.select_contact_by_id(id_contact)
+        wd.find_element_by_name("to_group").click()
+        Select(wd.find_element_by_name("to_group")).select_by_value(id_group)
+        wd.find_element_by_name("add").click()
+        self.open_contact_list_page()
+        self.contact_cache = None
+
+    def del_contact_in_group(self, id_contact, id_group):
+        wd = self.app.wd
+        self.app.open_home_page()
+        wd.find_element_by_name("group").click()
+        Select(wd.find_element_by_name("group")).select_by_value(id_group)
+        self.select_contact_by_id(id_contact)
+        wd.find_element_by_name("remove").click()
+        self.open_contact_list_page()
+        wd.find_element_by_name("group").click()
+        Select(wd.find_element_by_name("group")).select_by_visible_text("[all]")
+        self.contact_cache = None

@@ -4,6 +4,7 @@ import os.path
 from fixture.application import Application
 import importlib
 import jsonpickle
+from fixture.db import DbFixture
 
 
 fixture = None
@@ -12,16 +13,11 @@ target = None
 @pytest.fixture
 def app(request):
     global fixture
-    global target
     browser = request.config.getoption("--browser")
-    if target is None:
-        #определяем путь относительно директории проекта
-        config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), request.config.getoption("--target"))
-        with open(config_file) as f:
-            target = json.load(f)
+    web_config = load_config(request.config.getoption("--target"))["web"]
     if fixture is None or not fixture.is_valid():
-        fixture = Application(browser=browser, base_url=target['baseUrl'])
-    fixture.session.ensure_login(username=target['username'], password=target['password'])
+        fixture = Application(browser=browser, base_url=web_config['baseUrl'])
+    fixture.session.ensure_login(username=web_config['username'], password=web_config['password'])
     return fixture
 
 @pytest.fixture(scope = 'session', autouse=True)
@@ -32,9 +28,11 @@ def stop(request):
     request.addfinalizer(fin)
     return fixture
 
+#описание опций
 def pytest_addoption(parser):
     parser.addoption("--browser", action="store", default="firefox")
     parser.addoption("--target", action="store", default="target.json")
+    parser.addoption("--check_ui", action="store_true")
 
 # генератор тестов, динамически подставляет значения параметров
 #обработка фикстур, которые начинаются с префикса дата
@@ -57,3 +55,32 @@ def load_from_json(file):
     with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/%s.json" % file)) as f:
         # перекодируем обратно в в формат объектов питон
         return jsonpickle.decode(f.read())
+
+#прописываем фикстуру в conftest, т.к. предполагается, что не все тесты будут с ДБ, если все тесты с ДБ, то нужно в апликейшн добавить фикстуру
+#помечаем фикстурой функцией. session - в начале активируем класс,в конце останавливаем
+@pytest.fixture(scope = 'session')
+def db(request):
+    db_config = load_config(request.config.getoption("--target"))["db"]
+    #класс
+    dbfixture = DbFixture(host=db_config["host"], name=db_config["name"], user=db_config["user"], password=db_config["password"])
+    #объявляем финализацию для него
+    def fin():
+        dbfixture.destroy()
+    #регистрируем
+    request.addfinalizer(fin)
+    return dbfixture
+
+#функция для загрузки конфигурации
+def load_config(file):
+    global target
+    if target is None:
+        #определяем путь относительно директории проекта
+        config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), file)
+        with open(config_file) as f:
+            target = json.load(f)
+    return target
+
+@pytest.fixture
+def check_ui(request):
+    #проверка наличия опции
+    return request.config.getoption("--check_ui")

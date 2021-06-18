@@ -3,7 +3,7 @@ from model.contact import Contact
 from model.group import Group
 from fixture.orm import ORMFixture
 
-db = ORMFixture(host="127.0.0.1", name="addressbook", user="root", password="")
+#db = ORMFixture(host="127.0.0.1", name="addressbook", user="root", password="")
 
 def test_del_contact_in_group(app):
     #проверка наличия групп, если их нет, то добавляем

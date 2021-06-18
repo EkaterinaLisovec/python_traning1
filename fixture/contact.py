@@ -70,6 +70,7 @@ class ContactHelper:
 
     def delete_contact_by_index(self, index):
         wd = self.app.wd
+        self.open_contact_list_page()
         self.select_contact_by_index(index)
         self.accept_next_alert = True
         wd.find_element_by_xpath("//input[@value='Delete']").click()
@@ -78,6 +79,7 @@ class ContactHelper:
 
     def delete_contact_by_id(self, id):
         wd = self.app.wd
+        self.open_contact_list_page()
         self.select_contact_by_id(id)
         self.accept_next_alert = True
         wd.find_element_by_xpath("//input[@value='Delete']").click()
@@ -139,7 +141,7 @@ class ContactHelper:
                 all_emeils = cells[4].text
                 self.contact_cache.append(Contact(id=id, firstname=firstname, lastname=lastname,
                                                 all_phones_from_home_page=all_phones,
-                                                address=address, all_emeils_from_home_page=all_emeils))
+                                                address=address, all_emeils_from_home_page=all_emeils.replace(" ", "")))
         return list(self.contact_cache)
 
     def open_contact_to_edit_by_index(self, index):
@@ -207,3 +209,8 @@ class ContactHelper:
         wd.find_element_by_name("group").click()
         Select(wd.find_element_by_name("group")).select_by_visible_text("[all]")
         self.contact_cache = None
+
+    # удаление лишних пробелов - стрип
+    def clean_contact(self, contact):
+        return Contact(id=contact.id, firstname=contact.firstname.strip(), lastname=contact.lastname.strip(), address=contact.address.strip(), homephone=contact.homephone.strip(), mobilephone=contact.mobilephone.strip(),
+                                    workphone=contact.workphone.strip(), phone2=contact.phone2.strip(), email=contact.email, email2=contact.email2, email3=contact.email3)

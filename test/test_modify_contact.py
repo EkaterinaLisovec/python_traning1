@@ -11,6 +11,9 @@ def test_modify_firstname(app,db, check_ui):
     app.contact.modify_contact_by_index(index, contact)
     assert len(old_contacts) == app.contact.count()
     new_contacts = db.get_contact_list()
+    new_contacts = map(app.contact.clean_contact, new_contacts)
+    old_contacts = map(app.contact.clean_contact, old_contacts)
+    old_contacts = list(old_contacts)
     old_contacts[index] = contact
     #old_contacts[index] = contact
     assert sorted(old_contacts, key=Contact.id_or_max) == sorted(new_contacts, key=Contact.id_or_max)

@@ -105,3 +105,7 @@ class GroupHelper:
                 id = element.find_element_by_name("selected[]").get_attribute("value")
                 self.group_cache.append(Group(name=text, id=id))
         return list(self.group_cache)
+
+    # удаление лишних пробелов - стрип
+    def clean_group(self, group):
+        return Group(id=group.id, name=group.name.strip(), header=group.header.strip(), footer=group.footer.strip())

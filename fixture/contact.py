@@ -1,6 +1,7 @@
 from selenium.webdriver.support.ui import Select
 from model.contact import Contact
 import re
+import time
 
 class ContactHelper:
 
@@ -93,7 +94,7 @@ class ContactHelper:
 
     def select_contact_by_id(self, id):
         wd = self.app.wd
-        # wd.find_element_by_css_selector("input[value='%s']" % id).click()
+        #wd.find_element_by_css_selector("input[value='%s']" % id).click()
         wd.find_element_by_id(id).click()
 
     def select_contact_by_index(self, index):
@@ -111,6 +112,18 @@ class ContactHelper:
 
     def modify_first_contact(self):
         self.modify_contact_by_index(0)
+
+    def modify_contact_by_id(self, id, new_contact_data):
+        wd = self.app.wd
+        self.open_contact_list_page()
+        #open modification form
+        wd.find_element_by_xpath("//a[contains(@href, 'edit.php?id=%s')]"%id).click()
+        #fill contact form'
+        self.fill_contact_form(new_contact_data)
+        #submit modification
+        wd.find_element_by_name("update").click()
+        self.open_contact_list_page()
+        self.contact_cache = None
 
     def modify_contact_by_index(self, index, new_contact_data):
         wd = self.app.wd
